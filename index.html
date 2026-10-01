@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f3">
+  <title>Flight Disruptions 2025</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="lib/d3.v7.min.js"></script>
+  <script defer src="js/config.js"></script>
+  <script defer src="js/state.js"></script>
+  <script defer src="js/data.js"></script>
+  <script defer src="js/interactions.js"></script>
+  <script defer src="js/search.js"></script>
+  <script defer src="js/map.js"></script>
+  <script defer src="js/sankey.js"></script>
+  <script defer src="js/waffle.js"></script>
+  <script defer src="js/area.js"></script>
+  <script defer src="js/scatter.js"></script>
+  <script defer src="js/main.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="Flight Disruptions home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>FLIGHT<span class="brand-light">/INSIGHT</span></span>
+      </a>
+      <div class="header-title">
+        <p class="eyebrow eyebrow-light">Flight data | 2025</p>
+        <h1>Flight Disruptions <span>2025</span></h1>
+        <p class="header-subtitle">Explore flight routes, delays and cancellations</p>
+      </div>
+      <div class="data-badge"><span class="pulse-dot"></span><span id="dataset-status">Loading flight data...</span></div>
+    </div>
+  </header>
+
+  <main id="top" class="page-shell">
+    <section class="route-panel panel" aria-labelledby="route-title">
+      <div class="route-intro">
+        <span class="section-number">01</span>
+        <div>
+          <p class="eyebrow">Route analysis</p>
+          <h2 id="route-title">Explore a route</h2>
+          <p class="muted">Choose two airports to see how flights behaved across 2025.</p>
+        </div>
+      </div>
+      <div class="route-controls">
+        <div class="airport-field">
+          <label for="origin-search">Origin airport</label>
+          <div class="input-wrap"><span class="airport-pin origin-pin" aria-hidden="true"></span><input id="origin-search" list="airport-options" type="search" autocomplete="off" placeholder="Search code or city" disabled><datalist id="airport-options"></datalist></div>
+        </div>
+        <div class="route-arrow" aria-hidden="true">→</div>
+        <div class="airport-field">
+          <label for="destination-search">Destination airport</label>
+          <div class="input-wrap"><span class="airport-pin destination-pin" aria-hidden="true"></span><input id="destination-search" list="destination-options" type="search" autocomplete="off" placeholder="Search code or city" disabled><datalist id="destination-options"></datalist></div>
+        </div>
+        <button id="reset-route" class="button button-quiet" type="button" disabled>Clear route</button>
+      </div>
+      <p id="route-error" class="inline-error" role="status" hidden></p>
+      <div class="route-summary" aria-live="polite">
+        <span class="route-summary-label">CURRENT ROUTE</span>
+        <strong id="selected-route">Select an origin and destination</strong>
+        <span id="route-summary-meta" class="route-summary-meta">The search options come from the flight dataset.</span>
+      </div>
+    </section>
+
+    <section class="metric-strip" aria-label="Selected route summary">
+      <div class="metric-item"><span class="metric-icon icon-flights" aria-hidden="true">✈</span><div><span class="metric-label">Flights on route</span><strong id="metric-flights">—</strong></div></div>
+      <div class="metric-item"><span class="metric-icon icon-ontime" aria-hidden="true">✓</span><div><span class="metric-label">On time</span><strong id="metric-ontime">—</strong></div></div>
+      <div class="metric-item"><span class="metric-icon icon-delayed" aria-hidden="true">↗</span><div><span class="metric-label">Delayed 15+ min</span><strong id="metric-delayed">—</strong></div></div>
+      <div class="metric-item"><span class="metric-icon icon-cancelled" aria-hidden="true">×</span><div><span class="metric-label">Cancelled</span><strong id="metric-cancelled">—</strong></div></div>
+      <div class="metric-note"><span class="metric-note-dot"></span><span>Route charts follow this selection</span></div>
+    </section>
+
+    <div class="dashboard-grid">
+      <section class="panel viz-card map-card" aria-labelledby="map-title">
+        <header class="card-heading">
+          <div class="card-title-group"><span class="section-number section-number-small">02</span><div><p class="eyebrow">AIRPORTS</p><h2 id="map-title">Airports across the U.S.</h2><p class="card-subtitle">Choose an origin, then a highlighted destination. Color shows 2025 departures per airport.</p></div></div>
+          <div class="map-heading-actions"><div id="map-selection-prompt" class="map-selection-prompt" aria-live="polite">Click an airport to choose the origin.</div><button id="map-clear-route" class="button button-quiet map-clear-route" type="button" disabled>Clear route</button></div>
+        </header>
+        <div id="airport-map" class="chart-stage map-stage"><div class="loading-state"><span class="loader"></span><span>Preparing airport map…</span></div></div>
+        <div class="map-footer"><span class="map-traffic-scale"><span>Departures per airport</span><span>Fewer</span><i class="map-traffic-gradient" aria-hidden="true"></i><span>More</span></span><span class="map-legend-dot map-origin-dot"></span><span>Origin</span><span class="map-legend-dot map-destination-dot"></span><span>Available destinations</span></div>
+      </section>
+
+      <section class="panel viz-card sankey-card" aria-labelledby="sankey-title">
+        <header class="card-heading">
+          <div class="card-title-group"><span class="section-number section-number-small">03</span><div><p class="eyebrow">ROUTE</p><h2 id="sankey-title">Flight outcomes</h2><p class="card-subtitle">Flow width shows flights by outcome.</p></div></div>
+          <span class="chart-kicker">SANKEY</span>
+        </header>
+        <div id="sankey-chart" class="chart-stage sankey-stage"><div class="empty-state"><span class="empty-icon">↗</span><strong>Select a route to begin</strong><span>Outcomes will appear here.</span></div></div>
+        <div class="card-footnote"><span class="footnote-dot"></span><span>Click an outcome to highlight it in the other views.</span></div>
+      </section>
+
+      <section class="panel viz-card waffle-card" aria-labelledby="waffle-title">
+        <header class="card-heading">
+          <div class="card-title-group"><span class="section-number section-number-small">04</span><div><p class="eyebrow">CANCELLATIONS</p><h2 id="waffle-title">Cancellation reasons</h2><p class="card-subtitle">Each square represents part of the cancellation mix.</p></div></div>
+          <span class="chart-kicker">WAFFLE</span>
+        </header>
+        <div id="waffle-chart" class="chart-stage waffle-stage"><div class="empty-state"><span class="empty-icon">▦</span><strong>Waiting for a route</strong><span>Cancellation codes will be grouped here.</span></div></div>
+        <div class="card-footnote"><span class="footnote-dot"></span><span>Click a reason to highlight the cancelled flow.</span></div>
+      </section>
+
+      <section class="panel viz-card area-card" aria-labelledby="area-title">
+        <header class="card-heading">
+          <div class="card-title-group"><span class="section-number section-number-small">05</span><div><p class="eyebrow">BY MONTH</p><h2 id="area-title">Monthly disruptions</h2><p class="card-subtitle">Delayed and cancelled flights.</p></div></div>
+          <span class="chart-kicker">AREA</span>
+        </header>
+        <div id="area-chart" class="chart-stage area-stage"><div class="empty-state"><span class="empty-icon">⌁</span><strong>Waiting for a route</strong><span>Monthly disruptions will appear here.</span></div></div>
+        <div class="card-footnote"><span class="footnote-dot"></span><span>Choose a month to focus the scatterplot.</span></div>
+      </section>
+
+      <section class="panel viz-card scatter-card" aria-labelledby="scatter-title">
+        <header class="card-heading scatter-heading">
+          <div class="card-title-group"><span class="section-number section-number-small">06</span><div><p class="eyebrow">FLIGHT-LEVEL</p><h2 id="scatter-title">Arrival delay by flight</h2><p class="card-subtitle">Travel distance includes flights across all airports; departure delay follows the selected route.</p></div></div>
+          <div class="scatter-axis-controls"><span class="axis-control-label">X</span><div class="segmented-control" role="group" aria-label="Select scatterplot x-axis"><button class="axis-button is-active" type="button" data-axis="departureDelay" disabled>Departure delay</button><button class="axis-button" type="button" data-axis="distance" disabled>Travel distance</button></div><span class="scatter-y-key"><span>Y</span><strong>Arrival delay (min)</strong></span></div>
+        </header>
+        <div id="scatter-chart" class="chart-stage scatter-stage"><div class="empty-state"><span class="empty-icon">⠿</span><strong>Waiting for a route</strong><span>Choose an origin and destination to compare flights.</span></div></div>
+        <div class="scatter-bottom"><div class="outcome-legend"><span><i class="legend-dot legend-ontime"></i>On time</span><span><i class="legend-dot legend-delayed"></i>Delayed</span></div><p id="scatter-note" class="scatter-note">Use Travel distance for a sample from all airports.</p></div>
+      </section>
+
+    </div>
+    <footer class="page-footer"><span>Flight data, 2025</span><span>Outcomes, cancellation reasons and monthly patterns</span></footer>
+  </main>
+  <div id="chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true"></div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "source": "flight_delays_2025_reduced.csv",
+  "sourceRows": 7001619,
+  "skippedRows": 0,
+  "airportCount": 352,
+  "routeCount": 6938,
+  "cancellationCodes": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "scatterSamplePerRoute": 180,
+  "globalScatterSampleSize": 12000,
+  "globalScatterCandidateFlights": 6879484,
+  "geographyAvailable": true,
+  "geographyBoundarySource": "U.S. Census Bureau 2025 Cartographic Boundary, 1:5,000,000",
+  "preprocessingSeconds": 108.9,
+  "geographySource": "FAA 28-Day NASR APT CSV, effective 2026-10-01"
+}
